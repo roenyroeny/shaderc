@@ -260,6 +260,15 @@ std::tuple<bool, std::vector<uint32_t>, size_t> Compiler::Compile(
                                  total_warnings, total_errors);
   if (!success) return result_tuple;
 
+  // 'spirv' is an alias for the compilation_output_data. This alias is added
+  // to serve as an input for the call to DissassemblyBinary.
+  std::vector<uint32_t>& spirv = compilation_output_data;
+
+  glslang::SpvOptions options;
+  options.generateDebugInfo = generate_debug_info_;
+  options.disableOptimizer = true;
+  options.optimizeSize = false;
+#if 0
   glslang::TProgram program;
   program.addShader(&shader);
   success = program.link(EShMsgDefault) && program.mapIO();
@@ -268,16 +277,14 @@ std::tuple<bool, std::vector<uint32_t>, size_t> Compiler::Compile(
                                  total_warnings, total_errors);
   if (!success) return result_tuple;
 
-  // 'spirv' is an alias for the compilation_output_data. This alias is added
-  // to serve as an input for the call to DissassemblyBinary.
-  std::vector<uint32_t>& spirv = compilation_output_data;
-  glslang::SpvOptions options;
-  options.generateDebugInfo = generate_debug_info_;
-  options.disableOptimizer = true;
-  options.optimizeSize = false;
+
   // Note the call to GlslangToSpv also populates compilation_output_data.
   glslang::GlslangToSpv(*program.getIntermediate(used_shader_stage), spirv,
                         &options);
+#else
+  glslang::GlslangToSpv(*shader.getIntermediate(), spirv,
+                        &options);
+#endif
 
   // Set the tool field (the top 16-bits) in the generator word to
   // 'Shaderc over Glslang'.
