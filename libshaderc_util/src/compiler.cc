@@ -271,7 +271,7 @@ std::tuple<bool, std::vector<uint32_t>, size_t> Compiler::Compile(
 #if 0
   glslang::TProgram program;
   program.addShader(&shader);
-  success = program.link(EShMsgDefault) && program.mapIO();
+  success = program.link(EShMsgKeepUncalled) && program.mapIO();
   success &= PrintFilteredErrors(error_tag, error_stream, warnings_as_errors_,
                                  suppress_warnings_, program.getInfoLog(),
                                  total_warnings, total_errors);
