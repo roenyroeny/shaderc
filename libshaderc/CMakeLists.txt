@@ -85,6 +85,13 @@ if(SHADERC_ENABLE_INSTALL)
     string(REPLACE "$(Configuration)" "\${CMAKE_INSTALL_CONFIG_NAME}"
       install_location "${generated_location}")
     install(FILES ${install_location} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  elseif (NOT "${xcode_generator}" STREQUAL "")
+    # With Xcode generators, the LOCATION property is not properly
+    # expanded according to the current build configuration. We need to work
+    # around this problem by manually substitution.
+    string(REPLACE "$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)" "\${CMAKE_INSTALL_CONFIG_NAME}"
+      install_location "${generated_location
+    install(FILES ${install_location} DESTINATION ${CMAKE_INSTALL_LIBDIR})
   else()
     install(FILES ${generated_location} DESTINATION ${CMAKE_INSTALL_LIBDIR})
   endif()
